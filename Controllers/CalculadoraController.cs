@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using calculadorabe.Models;
+using calculadorabe.Data;
 
 namespace calculadorabe.Controllers
 {
@@ -14,9 +15,13 @@ namespace calculadorabe.Controllers
     public class CalculadoraController : ControllerBase
     {
         private readonly calculadoradbContext _context;
+        private readonly ICalculatorRepository _repo;
+        private readonly IUnitOfWork _unitOfWork;
 
-        public CalculadoraController(calculadoradbContext context)
+        public CalculadoraController(calculadoradbContext context, ICalculatorRepository repo, IUnitOfWork unitOfWork)
         {
+            _unitOfWork = unitOfWork;
+            _repo = repo;
             _context = context;
         }
 
@@ -24,21 +29,16 @@ namespace calculadorabe.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Calculadora>>> GetCalculadora()
         {
-            return await _context.Calculadora.ToListAsync();
+            var operaciones = await _repo.GetAll();
+            return Ok(operaciones);
         }
 
         // GET: api/Calculadora/5
         [HttpGet("{id}")]
         public async Task<ActionResult<Calculadora>> GetCalculadora(int id)
         {
-            var calculadora = await _context.Calculadora.FindAsync(id);
-
-            if (calculadora == null)
-            {
-                return NotFound();
-            }
-
-            return calculadora;
+            var operaciones =  await _repo.GetById(id);
+            return Ok(operaciones);  
         }
 
         [HttpGet("{operacion}")]

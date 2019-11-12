@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using calculadorabe.Data;
 using calculadorabe.Models;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -27,6 +28,8 @@ namespace calculadorabe
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
+            services.AddScoped<ICalculatorRepository, CalculatorRepository>();
+            services.AddScoped<IUnitOfWork, UnitOfWork>();
             services.AddDbContext<calculadoradbContext>(opt => 
             opt.UseSqlServer(Configuration.GetConnectionString("MyWebApiConnection")));
             services.AddCors(options => 
